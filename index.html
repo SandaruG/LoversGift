@@ -2212,6 +2212,23 @@
     renderProducts();
     startCountdown();
     observeReveal();
+    
+     // Use your localhost for local testing; swap this for your Railway URL when deploying!
+        const API_BASE = 'https://loversgift-backend-production.up.railway.app'; 
+
+        // Example of how you will use it to talk to your backend:
+        async function fetchData() {
+            try {
+                const response = await fetch(`${API_BASE}/your-endpoint`);
+                const data = await response.json();
+                console.log(data);
+            } catch (error) {
+                console.error("Error connecting to backend:", error);
+            }
+        }
+        
   </script>
 </body>
 </html>
+<script>
+      
