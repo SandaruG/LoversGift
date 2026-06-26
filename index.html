@@ -1,0 +1,2217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>LoversGift — Romantic Digital Gifts, Instantly Shared</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white:       #120b16;
+      --blush:       #24111f;
+      --peony:       #5f3143;
+      --rose:        #ff5f8fee;
+      --rose-dark:   #d84f75;
+      --plum:        #f073a3c9;
+      --mauve:       #5c464b;
+      --mauve-light: #693848;
+      --card-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+      --card-hover:  0 20px 56px rgba(255, 95, 143, 0.18);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, #09070b 0%, #151018 45%, #2a1420 100%);
+      color: var(--plum);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(20px, 5vw, 60px);
+      height: 68px;
+      background: rgba(12, 8, 14, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255, 95, 143, 0.2);
+      transition: box-shadow 0.3s ease;
+    }
+    nav.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,0.28); }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 1.45rem;
+      color: var(--plum);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-logo .heart-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--rose);
+      border-radius: 50%;
+      position: relative;
+      top: -2px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--mauve);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--rose); }
+
+    .nav-cta {
+      background: var(--rose);
+      color: var(--white) !important;
+      padding: 10px 22px;
+      border-radius: 100px;
+      font-weight: 600 !important;
+      font-size: 0.85rem !important;
+      transition: background 0.2s, transform 0.15s !important;
+    }
+    .nav-cta:hover { background: var(--rose-dark) !important; transform: translateY(-1px); }
+
+    .nav-mobile-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .nav-mobile-toggle span {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--plum);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ─── MOBILE NAV ─── */
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 68px; left: 0; right: 0;
+      background: rgba(12, 8, 14, 0.97);
+      border-bottom: 1px solid rgba(255, 95, 143, 0.2);
+      z-index: 99;
+      padding: 24px clamp(20px, 5vw, 60px) 32px;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--plum);
+      text-decoration: none;
+    }
+    .mobile-nav a:hover { color: var(--rose); }
+    .mobile-nav-cta {
+      margin-top: 4px;
+      background: var(--rose);
+      color: var(--white) !important;
+      padding: 14px 24px;
+      border-radius: 100px;
+      text-align: center;
+      font-weight: 600 !important;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      padding: 120px clamp(20px, 5vw, 60px) 80px;
+      background: linear-gradient(160deg, #0f0b12 10%, #20111d 45%, #341827 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* floating hearts background */
+    .hearts-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .heart-float {
+      position: absolute;
+      opacity: 0;
+      animation: floatUp linear infinite;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0) rotate(var(--rot)) scale(0.6); opacity: 0; }
+      10%  { opacity: var(--max-op); }
+      90%  { opacity: var(--max-op); }
+      100% { transform: translateY(-110vh) rotate(calc(var(--rot) + 30deg)) scale(1.1); opacity: 0; }
+    }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--rose);
+      background: rgba(232,71,106,0.08);
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    .hero-eyebrow svg { width: 12px; height: 12px; fill: var(--rose); }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.6rem, 5.5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--plum);
+      margin-bottom: 20px;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--rose);
+      font-weight: 400;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: var(--mauve);
+      line-height: 1.65;
+      max-width: 440px;
+      margin-bottom: 40px;
+      font-weight: 300;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--rose);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 15px 30px;
+      border-radius: 100px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(232,71,106,0.3);
+    }
+    .btn-primary:hover {
+      background: var(--rose-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(232,71,106,0.38);
+    }
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--plum);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 15px 24px;
+      border-radius: 100px;
+      text-decoration: none;
+      border: 1.5px solid var(--peony);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    }
+    .btn-ghost:hover {
+      border-color: var(--rose);
+      background: var(--blush);
+      transform: translateY(-2px);
+    }
+
+    .hero-social-proof {
+      margin-top: 36px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .avatars {
+      display: flex;
+    }
+    .avatars img, .avatars .av {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      border: 2px solid white;
+      margin-left: -10px;
+      object-fit: cover;
+    }
+    .avatars .av {
+      background: linear-gradient(135deg, var(--peony), var(--mauve-light));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 600; color: var(--white);
+    }
+    .avatars .av:first-child { margin-left: 0; }
+    .social-proof-text {
+      font-size: 0.82rem;
+      color: var(--mauve);
+      line-height: 1.4;
+    }
+    .social-proof-text strong { color: var(--plum); }
+
+    /* ─── HERO CARDS (floating) ─── */
+    .hero-visual {
+      position: relative;
+      height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gift-card-float {
+      position: absolute;
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: var(--card-shadow);
+      padding: 20px;
+      width: 200px;
+      animation: gentleFloat ease-in-out infinite;
+      border: 1px solid rgba(255,214,224,0.5);
+      transition: transform 0.3s ease;
+    }
+    .gift-card-float:hover { transform: scale(1.04) !important; }
+
+    .gift-card-float.c1 {
+      top: 30px; left: 10%;
+      transform: rotate(-6deg);
+      animation-duration: 4.8s;
+      animation-delay: 0s;
+      width: 180px;
+    }
+    .gift-card-float.c2 {
+      top: 60px; right: 5%;
+      transform: rotate(5deg);
+      animation-duration: 5.6s;
+      animation-delay: -1.5s;
+      width: 210px;
+    }
+    .gift-card-float.c3 {
+      bottom: 60px; left: 5%;
+      transform: rotate(3deg);
+      animation-duration: 5s;
+      animation-delay: -2.8s;
+      width: 190px;
+    }
+    .gift-card-float.c4 {
+      bottom: 30px; right: 8%;
+      transform: rotate(-4deg);
+      animation-duration: 6.2s;
+      animation-delay: -0.8s;
+      width: 175px;
+    }
+    .gift-card-float.c5 {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(1deg);
+      animation-duration: 5.4s;
+      animation-delay: -3.2s;
+      width: 230px;
+      z-index: 3;
+    }
+
+    @keyframes gentleFloat {
+      0%, 100% { transform-origin: center; margin-top: 0px; }
+      50%       { margin-top: -12px; }
+    }
+
+    .gcard-tag {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--rose);
+      background: rgba(232,71,106,0.09);
+      padding: 3px 10px;
+      border-radius: 100px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .gcard-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .gcard-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--plum);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+    .gcard-meta {
+      font-size: 0.72rem;
+      color: var(--mauve);
+    }
+    .gcard-price {
+      margin-top: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--rose);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .gcard-price .instant {
+      font-size: 0.65rem;
+      font-weight: 400;
+      color: var(--mauve);
+    }
+    .gcard-preview-img {
+      width: 100%;
+      height: 80px;
+      border-radius: 10px;
+      object-fit: cover;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, var(--blush), var(--peony));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+
+    /* ─── TRUST BAR ─── */
+    .trust-bar {
+      background: var(--blush);
+      padding: 20px clamp(20px, 5vw, 60px);
+      border-top: 1px solid var(--peony);
+      border-bottom: 1px solid var(--peony);
+    }
+    .trust-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--plum);
+      font-weight: 500;
+    }
+    .trust-item .ti-icon {
+      width: 32px; height: 32px;
+      background: white;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(45,27,36,0.06);
+    }
+
+    /* ─── SECTION COMMON ─── */
+    section {
+      padding: clamp(60px, 8vw, 100px) clamp(20px, 5vw, 60px);
+    }
+    .section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mauve);
+      margin-bottom: 12px;
+    }
+    .section-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 20px; height: 1.5px;
+      background: var(--mauve-light);
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.9rem, 4vw, 2.8rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--plum);
+      margin-bottom: 14px;
+    }
+    .section-title em {
+      font-style: italic;
+      color: var(--rose);
+      font-weight: 400;
+    }
+    .section-sub {
+      font-size: 1rem;
+      color: var(--mauve);
+      line-height: 1.65;
+      max-width: 520px;
+      font-weight: 300;
+    }
+
+    /* ─── PRODUCT GRID ─── */
+    .products-section { background: var(--white); }
+
+    .products-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 48px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .filter-tab {
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 8px 18px;
+      border-radius: 100px;
+      border: 1.5px solid var(--peony);
+      color: var(--mauve);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .filter-tab:hover, .filter-tab.active {
+      background: var(--rose);
+      border-color: var(--rose);
+      color: white;
+    }
+
+    .view-all-link {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--rose);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .view-all-link:hover { color: var(--rose-dark); }
+    .view-all-link svg { width: 14px; height: 14px; }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(255,214,224,0.5);
+      box-shadow: var(--card-shadow);
+      transition: transform 0.28s ease, box-shadow 0.28s ease;
+      cursor: pointer;
+      position: relative;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--card-hover);
+    }
+
+    .product-card-badge {
+      position: absolute;
+      top: 14px; left: 14px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 100px;
+      z-index: 2;
+    }
+    .badge-new  { background: var(--rose); color: white; }
+    .badge-hot  { background: var(--plum); color: white; }
+    .badge-free { background: #4CAF50; color: white; }
+
+    .product-card-img {
+      width: 100%;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-card-img::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 40px;
+      background: linear-gradient(transparent, white);
+    }
+
+    .product-card-body {
+      padding: 20px 22px 22px;
+    }
+
+    .product-card-category {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mauve);
+      margin-bottom: 6px;
+    }
+
+    .product-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--plum);
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .product-card-desc {
+      font-size: 0.84rem;
+      color: var(--mauve);
+      line-height: 1.55;
+      margin-bottom: 18px;
+      font-weight: 300;
+    }
+
+    .product-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .product-price {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--rose);
+    }
+    .product-price .free { color: #4CAF50; }
+
+    .product-card-btn {
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 9px 20px;
+      border-radius: 100px;
+      background: var(--blush);
+      color: var(--rose);
+      border: 1.5px solid var(--peony);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+    .product-card:hover .product-card-btn {
+      background: var(--rose);
+      border-color: var(--rose);
+      color: white;
+    }
+
+    .product-card-stars {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 14px;
+    }
+    .stars { color: #F5A623; font-size: 0.8rem; }
+    .review-count { font-size: 0.75rem; color: var(--mauve); }
+
+    /* ─── HOW IT WORKS ─── */
+    .how-section { background: var(--blush); }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 32px;
+      margin-top: 56px;
+    }
+
+    .step-card {
+      background: white;
+      border-radius: 20px;
+      padding: 32px 28px;
+      border: 1px solid var(--peony);
+      position: relative;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .step-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--card-shadow);
+    }
+
+    .step-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--peony);
+      line-height: 1;
+      margin-bottom: 16px;
+      letter-spacing: -0.04em;
+    }
+
+    .step-icon {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .step-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--plum);
+      margin-bottom: 10px;
+    }
+
+    .step-desc {
+      font-size: 0.88rem;
+      color: var(--mauve);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .step-connector {
+      display: none;
+    }
+
+    /* ─── PREVIEW / CUSTOMIZER DEMO ─── */
+    .demo-section { background: var(--white); }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      margin-top: 56px;
+    }
+
+    .demo-form-card {
+      background: white;
+      border-radius: 24px;
+      padding: 36px;
+      border: 1.5px solid var(--peony);
+      box-shadow: var(--card-shadow);
+    }
+
+    .demo-form-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--plum);
+      margin-bottom: 8px;
+    }
+    .demo-form-sub {
+      font-size: 0.84rem;
+      color: var(--mauve);
+      margin-bottom: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--plum);
+      margin-bottom: 7px;
+      letter-spacing: 0.02em;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1.5px solid var(--peony);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--plum);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      border-color: var(--rose);
+      box-shadow: 0 0 0 3px rgba(232,71,106,0.1);
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .theme-picker {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .theme-dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .theme-dot:hover { transform: scale(1.15); }
+    .theme-dot.selected { border-color: var(--plum); }
+
+    .generate-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--rose);
+      color: white;
+      border: none;
+      border-radius: 100px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(232,71,106,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .generate-btn:hover {
+      background: var(--rose-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(232,71,106,0.38);
+    }
+
+    /* preview panel */
+    .demo-preview {
+      position: relative;
+    }
+    .demo-preview-phone {
+      width: 280px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 36px;
+      border: 6px solid var(--plum);
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(45,27,36,0.2);
+      position: relative;
+    }
+    .phone-notch {
+      height: 28px;
+      background: var(--plum);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .phone-notch-pill {
+      width: 70px; height: 6px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 100px;
+    }
+    .phone-content {
+      background: linear-gradient(160deg, #fff0f3, #ffe0e8);
+      padding: 24px 20px 32px;
+      min-height: 480px;
+      text-align: center;
+      position: relative;
+    }
+    .phone-hearts {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      display: block;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.12); }
+    }
+    .phone-from {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mauve);
+      margin-bottom: 14px;
+    }
+    .phone-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--plum);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+    .phone-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-style: italic;
+      color: var(--rose);
+      margin-bottom: 18px;
+    }
+    .phone-message {
+      font-size: 0.78rem;
+      color: var(--plum);
+      line-height: 1.65;
+      margin-bottom: 20px;
+      opacity: 0.8;
+    }
+    .phone-countdown {
+      background: white;
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 16px rgba(45,27,36,0.08);
+    }
+    .phone-countdown-label {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mauve);
+      margin-bottom: 4px;
+    }
+    .phone-countdown-time {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--plum);
+      letter-spacing: 0.05em;
+    }
+    .phone-share-btn {
+      width: 100%;
+      padding: 11px;
+      background: var(--rose);
+      color: white;
+      border: none;
+      border-radius: 100px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .phone-expire-note {
+      font-size: 0.62rem;
+      color: var(--mauve);
+      margin-top: 10px;
+    }
+
+    .demo-preview-label {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.82rem;
+      color: var(--mauve);
+      font-weight: 300;
+    }
+    .demo-preview-label strong { color: var(--plum); }
+
+    /* ─── TESTIMONIALS ─── */
+    .testimonials-section { background: var(--blush); }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .testimonial-card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px;
+      border: 1px solid var(--peony);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .testimonial-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--card-shadow);
+    }
+
+    .testimonial-quote {
+      font-size: 2rem;
+      color: var(--peony);
+      font-family: 'Playfair Display', serif;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .testimonial-text {
+      font-size: 0.92rem;
+      color: var(--plum);
+      line-height: 1.65;
+      margin-bottom: 20px;
+      font-style: italic;
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .testimonial-av {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: white;
+    }
+    .testimonial-name {
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: var(--plum);
+    }
+    .testimonial-occasion {
+      font-size: 0.75rem;
+      color: var(--mauve);
+    }
+
+    /* ─── CTA STRIP ─── */
+    .cta-strip {
+      padding: clamp(60px, 8vw, 100px) clamp(20px, 5vw, 60px);
+      background: var(--plum);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .cta-strip::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(232,71,106,0.25) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .cta-strip-inner {
+      max-width: 640px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+    .cta-strip-emoji {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      display: block;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    .cta-strip-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      color: white;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .cta-strip-title em {
+      font-style: italic;
+      color: var(--peony);
+    }
+    .cta-strip-sub {
+      color: var(--mauve-light);
+      font-size: 1rem;
+      margin-bottom: 36px;
+      font-weight: 300;
+      line-height: 1.6;
+    }
+    .cta-strip-actions {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .btn-light {
+      background: white;
+      color: var(--rose);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 15px 30px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      display: inline-block;
+    }
+    .btn-light:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 36px rgba(0,0,0,0.28);
+    }
+    .btn-outline-light {
+      background: transparent;
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 15px 30px;
+      border-radius: 100px;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+      display: inline-block;
+    }
+    .btn-outline-light:hover {
+      border-color: white;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .expire-note {
+      margin-top: 24px;
+      font-size: 0.78rem;
+      color: rgba(181,131,141,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--plum);
+      padding: 48px clamp(20px, 5vw, 60px) 32px;
+      border-top: 1px solid rgba(255,214,224,0.1);
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 48px;
+    }
+    .footer-brand-name {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 1.4rem;
+      color: white;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .footer-brand-desc {
+      font-size: 0.84rem;
+      color: var(--mauve-light);
+      line-height: 1.65;
+      font-weight: 300;
+      max-width: 260px;
+    }
+    .footer-social {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .footer-social-btn {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .footer-social-btn:hover { background: rgba(255,255,255,0.15); }
+
+    .footer-col-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mauve-light);
+      margin-bottom: 16px;
+    }
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .footer-links a {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--peony); }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .footer-copy {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.35);
+    }
+    .footer-legal {
+      display: flex;
+      gap: 20px;
+    }
+    .footer-legal a {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.35);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-legal a:hover { color: var(--peony); }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(45, 27, 36, 0.65);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: white;
+      border-radius: 28px;
+      max-width: 540px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 36px;
+      position: relative;
+      animation: modalIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes modalIn {
+      from { transform: scale(0.92) translateY(20px); opacity: 0; }
+      to   { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px; right: 20px;
+      width: 34px; height: 34px;
+      background: var(--blush);
+      border: none;
+      border-radius: 50%;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--mauve);
+      transition: background 0.2s;
+    }
+    .modal-close:hover { background: var(--peony); }
+
+    .modal-product-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--rose);
+      background: rgba(232,71,106,0.08);
+      padding: 5px 12px;
+      border-radius: 100px;
+      margin-bottom: 14px;
+    }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--plum);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    .modal-desc {
+      font-size: 0.9rem;
+      color: var(--mauve);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      font-weight: 300;
+    }
+
+    .modal-features {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .modal-feature-pill {
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 100px;
+      background: var(--blush);
+      color: var(--plum);
+      border: 1px solid var(--peony);
+    }
+
+    .modal-price-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--blush);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .modal-price-val {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--rose);
+      font-family: 'Playfair Display', serif;
+    }
+    .modal-price-note {
+      font-size: 0.78rem;
+      color: var(--mauve);
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .modal-share-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .share-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1.5px solid var(--peony);
+      background: white;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--plum);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .share-btn:hover {
+      background: var(--blush);
+      border-color: var(--mauve-light);
+    }
+    .share-btn.wa  { border-color: #25D366; color: #25D366; }
+    .share-btn.wa:hover  { background: #f0fdf4; }
+    .share-btn.msg { border-color: #0078FF; color: #0078FF; }
+    .share-btn.msg:hover { background: #eff6ff; }
+
+    /* ─── LINK GENERATED STATE ─── */
+    .link-generated {
+      display: none;
+      background: linear-gradient(135deg, var(--blush), #ffe8f0);
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+      border: 1.5px solid var(--peony);
+    }
+    .link-generated.show { display: block; }
+
+    .link-box {
+      background: white;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 0.82rem;
+      color: var(--mauve);
+      font-family: monospace;
+      border: 1px solid var(--peony);
+      margin: 16px 0;
+      word-break: break-all;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .link-box:hover { border-color: var(--rose); }
+
+    .link-expire {
+      font-size: 0.75rem;
+      color: var(--mauve);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .hero-sub { max-width: 100%; }
+      .hero-actions { justify-content: center; }
+      .hero-social-proof { justify-content: center; }
+      .hero-visual { display: none; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .demo-preview-phone { margin-bottom: 32px; }
+      .footer-top {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .nav-mobile-toggle { display: flex; }
+      .trust-inner { gap: 16px; }
+      .form-row { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      .products-header { flex-direction: column; align-items: flex-start; }
+      .modal { padding: 24px 20px; border-radius: 20px; }
+      .modal-title { font-size: 1.4rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .gift-card-float, .heart-float, .phone-hearts { animation: none; }
+    }
+
+    /* ─── SCROLL ANIMATIONS ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+  </style>
+</head>
+<body>
+
+  <!-- ──────────── NAV ──────────── -->
+  <nav id="main-nav">
+    <a href="#" class="nav-logo">
+      LoversGift <span class="heart-dot"></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#products">Browse Gifts</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#demo">Try It</a></li>
+      <li><a href="#products" class="nav-cta">Create a Gift →</a></li>
+    </ul>
+    <div class="nav-mobile-toggle" id="mobile-toggle" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="#products" onclick="closeMobileNav()">Browse Gifts</a>
+    <a href="#how"      onclick="closeMobileNav()">How It Works</a>
+    <a href="#demo"     onclick="closeMobileNav()">Try It Free</a>
+    <a href="#products" class="mobile-nav-cta" onclick="closeMobileNav()">Create a Gift →</a>
+  </div>
+
+  <!-- ──────────── HERO ──────────── -->
+  <section class="hero" id="home">
+    <!-- floating hearts bg -->
+    <div class="hearts-bg" id="hearts-bg"></div>
+
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          Romantic Digital Gifts
+        </div>
+        <h1 class="hero-title">
+          Send love that <em>arrives</em><br/>in seconds
+        </h1>
+        <p class="hero-sub">
+          Choose a beautiful gift template, personalise it with your names and message, and share the link instantly. No app. No download. Just love, delivered.
+        </p>
+        <div class="hero-actions">
+          <a href="#products" class="btn-primary">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            Browse Gifts
+          </a>
+          <a href="#how" class="btn-ghost">See how it works</a>
+        </div>
+        <div class="hero-social-proof">
+          <div class="avatars">
+            <div class="av" style="background:linear-gradient(135deg,#FFD6E0,#B5838D);">S</div>
+            <div class="av" style="background:linear-gradient(135deg,#E8476A,#C73358);">A</div>
+            <div class="av" style="background:linear-gradient(135deg,#2D1B24,#B5838D);">M</div>
+            <div class="av" style="background:linear-gradient(135deg,#FFD6E0,#E8476A);">J</div>
+          </div>
+          <p class="social-proof-text">
+            <strong>2,400+ gifts sent</strong> this week<br/>
+            Loved by couples in 42 countries
+          </p>
+        </div>
+      </div>
+
+      <!-- floating product card previews -->
+      <div class="hero-visual">
+        <div class="gift-card-float c1">
+          <div class="gcard-tag">Love Letter</div>
+          <div class="gcard-icon">💌</div>
+          <div class="gcard-title">Animated Love Letter</div>
+          <div class="gcard-meta">Delivered with animation</div>
+          <div class="gcard-price">$4.99 <span class="instant">Instant</span></div>
+        </div>
+        <div class="gift-card-float c2">
+          <div class="gcard-preview-img">🎂</div>
+          <div class="gcard-tag">Birthday</div>
+          <div class="gcard-title">Birthday Surprise Page</div>
+          <div class="gcard-price">$3.99 <span class="instant">Instant</span></div>
+        </div>
+        <div class="gift-card-float c5">
+          <div class="gcard-tag">Anniversary ✨</div>
+          <div class="gcard-icon">💑</div>
+          <div class="gcard-title">Relationship Timeline</div>
+          <div class="gcard-meta">Add your milestones & photos</div>
+          <div class="gcard-price">$6.99 <span class="instant">Instant</span></div>
+        </div>
+        <div class="gift-card-float c3">
+          <div class="gcard-tag">Open When</div>
+          <div class="gcard-icon">📬</div>
+          <div class="gcard-title">Open When Letters</div>
+          <div class="gcard-price">$5.49 <span class="instant">Instant</span></div>
+        </div>
+        <div class="gift-card-float c4">
+          <div class="gcard-tag">Free</div>
+          <div class="gcard-icon">🌹</div>
+          <div class="gcard-title">Simple Love Note</div>
+          <div class="gcard-price"><span class="free">Free</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── TRUST BAR ──────────── -->
+  <div class="trust-bar">
+    <div class="trust-inner">
+      <div class="trust-item">
+        <div class="ti-icon">⚡</div>
+        <span>Ready in under 2 minutes</span>
+      </div>
+      <div class="trust-item">
+        <div class="ti-icon">🔗</div>
+        <span>Share via any platform</span>
+      </div>
+      <div class="trust-item">
+        <div class="ti-icon">🔒</div>
+        <span>Auto-deleted after 24 hours</span>
+      </div>
+      <div class="trust-item">
+        <div class="ti-icon">📱</div>
+        <span>Works perfectly on mobile</span>
+      </div>
+      <div class="trust-item">
+        <div class="ti-icon">💳</div>
+        <span>No account required</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────── PRODUCTS ──────────── -->
+  <section class="products-section" id="products">
+    <div class="section-inner">
+      <div class="products-header">
+        <div>
+          <div class="section-eyebrow">Gift Marketplace</div>
+          <h2 class="section-title">Find the <em>perfect</em> gift<br/>for your moment</h2>
+          <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterProducts('all', this)">All Gifts</button>
+            <button class="filter-tab" onclick="filterProducts('love', this)">Love Letters</button>
+            <button class="filter-tab" onclick="filterProducts('birthday', this)">Birthdays</button>
+            <button class="filter-tab" onclick="filterProducts('anniversary', this)">Anniversaries</button>
+            <button class="filter-tab" onclick="filterProducts('surprise', this)">Surprises</button>
+            <button class="filter-tab" onclick="filterProducts('free', this)">Free</button>
+          </div>
+        </div>
+        <a href="#products" class="view-all-link">
+          View all 24 gifts
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="product-grid" id="product-grid">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── HOW IT WORKS ──────────── -->
+  <section class="how-section" id="how">
+    <div class="section-inner">
+      <div class="reveal">
+        <div class="section-eyebrow">So simple</div>
+        <h2 class="section-title">Three steps to<br/>make someone <em>feel loved</em></h2>
+        <p class="section-sub">No design skills, no technical steps — just you and your feelings, turned into something beautiful.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card reveal reveal-delay-1">
+          <div class="step-number">01</div>
+          <span class="step-icon">🛍️</span>
+          <div class="step-title">Pick a gift template</div>
+          <p class="step-desc">Browse our collection of romantic experiences — love letters, birthday pages, timelines, and more. Each is designed to feel personal and beautiful.</p>
+        </div>
+        <div class="step-card reveal reveal-delay-2">
+          <div class="step-number">02</div>
+          <span class="step-icon">✍️</span>
+          <div class="step-title">Add your personal touch</div>
+          <p class="step-desc">Enter names, your message, important dates, and choose a theme. The experience transforms into something that feels made just for them.</p>
+        </div>
+        <div class="step-card reveal reveal-delay-3">
+          <div class="step-number">03</div>
+          <span class="step-icon">💬</span>
+          <div class="step-title">Share the link instantly</div>
+          <p class="step-desc">Your gift gets a private link. Send it over WhatsApp, Messenger, or any platform. They open it — and feel the love, right there in their browser.</p>
+        </div>
+        <div class="step-card reveal reveal-delay-4">
+          <div class="step-number">04</div>
+          <span class="step-icon">🕐</span>
+          <div class="step-title">It disappears after 24 hours</div>
+          <p class="step-desc">Every gift is designed for the moment. The link expires in 24 hours, keeping your love private and making it feel urgently special.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── DEMO / CUSTOMIZER ──────────── -->
+  <section class="demo-section" id="demo">
+    <div class="section-inner">
+      <div class="reveal">
+        <div class="section-eyebrow">Try it now</div>
+        <h2 class="section-title">See your gift<br/><em>come to life</em></h2>
+        <p class="section-sub">Fill in the form and watch the preview update. This is exactly what your partner will see when they open the link.</p>
+      </div>
+
+      <div class="demo-grid">
+        <!-- PHONE PREVIEW (left on desktop) -->
+        <div class="demo-preview reveal reveal-delay-1">
+          <div class="demo-preview-phone">
+            <div class="phone-notch">
+              <div class="phone-notch-pill"></div>
+            </div>
+            <div class="phone-content" id="phone-preview">
+              <span class="phone-hearts" id="prev-hearts">💕</span>
+              <div class="phone-from">A gift for...</div>
+              <div class="phone-heading">My dearest,</div>
+              <div class="phone-name" id="prev-name">Sofia</div>
+              <div class="phone-message" id="prev-message">
+                Every moment with you feels like a dream I never want to wake up from. You make everything brighter, warmer, and more beautiful.
+              </div>
+              <div class="phone-countdown">
+                <div class="phone-countdown-label">This gift expires in</div>
+                <div class="phone-countdown-time" id="countdown-time">23:59:42</div>
+              </div>
+              <button class="phone-share-btn">Open My Gift 💌</button>
+              <div class="phone-expire-note">This link expires in 24 hours · LoversGift</div>
+            </div>
+          </div>
+          <div class="demo-preview-label">
+            Live preview · <strong>This is what they'll see</strong>
+          </div>
+        </div>
+
+        <!-- FORM -->
+        <div class="reveal reveal-delay-2">
+          <div class="demo-form-card">
+            <div class="demo-form-title">Animated Love Letter</div>
+            <div class="demo-form-sub">Personalise your gift below</div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Your name</label>
+                <input type="text" id="sender-name" placeholder="e.g. Marco" maxlength="30" oninput="updatePreview()" />
+              </div>
+              <div class="form-group">
+                <label>Their name</label>
+                <input type="text" id="receiver-name" placeholder="e.g. Sofia" maxlength="30" oninput="updatePreview()" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Your message</label>
+              <textarea id="message-input" placeholder="Write something from the heart..." oninput="updatePreview()" maxlength="300">Every moment with you feels like a dream I never want to wake up from. You make everything brighter, warmer, and more beautiful.</textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Special date (optional)</label>
+              <input type="date" id="special-date" />
+            </div>
+
+            <div class="form-group">
+              <label>Choose a theme</label>
+              <div class="theme-picker">
+                <div class="theme-dot selected" style="background:linear-gradient(135deg,#FFD6E0,#E8476A);" onclick="selectTheme(this, '💕')" title="Rose"></div>
+                <div class="theme-dot" style="background:linear-gradient(135deg,#dbeafe,#3b82f6);" onclick="selectTheme(this, '💙')" title="Ocean"></div>
+                <div class="theme-dot" style="background:linear-gradient(135deg,#d1fae5,#10b981);" onclick="selectTheme(this, '💚')" title="Forest"></div>
+                <div class="theme-dot" style="background:linear-gradient(135deg,#fef3c7,#f59e0b);" onclick="selectTheme(this, '💛')" title="Golden"></div>
+                <div class="theme-dot" style="background:linear-gradient(135deg,#ede9fe,#7c3aed);" onclick="selectTheme(this, '💜')" title="Lavender"></div>
+              </div>
+            </div>
+
+            <div id="form-step-1">
+              <button class="generate-btn" onclick="generateLink()">
+                <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                Generate My Gift Link — $4.99
+              </button>
+            </div>
+
+            <div class="link-generated" id="link-generated">
+              <div style="font-size:2.5rem;margin-bottom:12px;">🎉</div>
+              <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:600;color:var(--plum);margin-bottom:6px;">Your gift is ready!</div>
+              <div style="font-size:0.85rem;color:var(--mauve);margin-bottom:4px;">Share this private link with <strong id="link-receiver">Sofia</strong>:</div>
+              <div class="link-box" id="gift-link" onclick="copyLink()">https://loversgift.io/g/xK9m2p...💕</div>
+              <div class="link-expire">
+                <svg width="12" height="12" fill="none" stroke="var(--mauve)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                Expires in 24 hours · Tap link to copy
+              </div>
+              <div class="modal-share-row" style="margin-top:18px;">
+                <button class="share-btn wa">📱 WhatsApp</button>
+                <button class="share-btn msg">💬 Messenger</button>
+                <button class="share-btn" style="flex:0.7;">📋 Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── TESTIMONIALS ──────────── -->
+  <section class="testimonials-section">
+    <div class="section-inner">
+      <div class="reveal" style="text-align:center;max-width:540px;margin:0 auto;">
+        <div class="section-eyebrow">Real stories</div>
+        <h2 class="section-title">Love, <em>delivered</em></h2>
+        <p class="section-sub" style="margin:0 auto;">What happens when you send a LoversGift.</p>
+      </div>
+      <div class="testimonials-grid" style="margin-top:48px;">
+        <div class="testimonial-card reveal reveal-delay-1">
+          <div class="testimonial-quote">"</div>
+          <p class="testimonial-text">I used the Birthday Surprise page for my girlfriend and she literally cried happy tears. She said it was the most thoughtful thing I'd ever done. And it took me 3 minutes.</p>
+          <div class="testimonial-author">
+            <div class="testimonial-av" style="background:linear-gradient(135deg,#E8476A,#C73358);">J</div>
+            <div>
+              <div class="testimonial-name">James T.</div>
+              <div class="testimonial-occasion">Birthday Surprise · Used last Tuesday</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card reveal reveal-delay-2">
+          <div class="testimonial-quote">"</div>
+          <p class="testimonial-text">Long distance relationship. The Relationship Timeline with all our photos and dates made my partner feel so seen. They shared it everywhere. Total game changer.</p>
+          <div class="testimonial-author">
+            <div class="testimonial-av" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);">A</div>
+            <div>
+              <div class="testimonial-name">Amara K.</div>
+              <div class="testimonial-occasion">Relationship Timeline · 3-year anniversary</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card reveal reveal-delay-3">
+          <div class="testimonial-quote">"</div>
+          <p class="testimonial-text">Sent the Open When Letters set before my husband's business trip. He opened each one at the right moment and said it made him feel so close to me the whole week.</p>
+          <div class="testimonial-author">
+            <div class="testimonial-av" style="background:linear-gradient(135deg,#f59e0b,#d97706);">S</div>
+            <div>
+              <div class="testimonial-name">Sophie M.</div>
+              <div class="testimonial-occasion">Open When Letters · Long-distance moment</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── CTA STRIP ──────────── -->
+  <div class="cta-strip" id="create">
+    <div class="cta-strip-inner">
+      <span class="cta-strip-emoji">💌</span>
+      <h2 class="cta-strip-title">Someone is waiting to feel <em>loved</em> by you</h2>
+      <p class="cta-strip-sub">It takes two minutes. It lasts forever in their memory. Start with a free love note or explore our full collection.</p>
+      <div class="cta-strip-actions">
+        <a href="#products" class="btn-light">Browse All Gifts</a>
+        <a href="#demo"     class="btn-outline-light">Try Free First</a>
+      </div>
+      <div class="expire-note">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        Every gift auto-deletes after 24 hours — completely private by design
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────── FOOTER ──────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand-name">
+            LoversGift <span style="color:var(--rose);font-size:1rem;">♥</span>
+          </div>
+          <p class="footer-brand-desc">The romantic digital gift marketplace. Beautiful, personal, browser-based experiences that make your partner feel seen, loved, and surprised.</p>
+          <div class="footer-social">
+            <a class="footer-social-btn" href="#" title="Instagram">📸</a>
+            <a class="footer-social-btn" href="#" title="TikTok">🎵</a>
+            <a class="footer-social-btn" href="#" title="Pinterest">📌</a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title">Gifts</div>
+          <ul class="footer-links">
+            <li><a href="#">Love Letters</a></li>
+            <li><a href="#">Birthday Surprises</a></li>
+            <li><a href="#">Anniversaries</a></li>
+            <li><a href="#">Open When Letters</a></li>
+            <li><a href="#">Relationship Timelines</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Platform</div>
+          <ul class="footer-links">
+            <li><a href="#">How It Works</a></li>
+            <li><a href="#">Pricing</a></li>
+            <li><a href="#">Free Templates</a></li>
+            <li><a href="#">For Sellers</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Support</div>
+          <ul class="footer-links">
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Use</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2025 LoversGift · Made with ♥ for couples everywhere</div>
+        <div class="footer-legal">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ──────────── PRODUCT MODAL ──────────── -->
+  <div class="modal-overlay" id="product-modal" onclick="closeModalOutside(event)">
+    <div class="modal" id="modal-content">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-product-badge" id="modal-badge">💌 Love Letter</div>
+      <h2 class="modal-title" id="modal-title">Animated Love Letter</h2>
+      <p class="modal-desc" id="modal-desc">A beautifully animated love letter your partner opens in their browser. Add your names, message, and photos — it feels completely personal.</p>
+      <div class="modal-features" id="modal-features"></div>
+      <div class="modal-price-row">
+        <div>
+          <div style="font-size:0.75rem;color:var(--mauve);margin-bottom:4px;">Price</div>
+          <div class="modal-price-val" id="modal-price">$4.99</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.75rem;color:var(--mauve);">Link expires</div>
+          <div style="font-size:0.9rem;font-weight:600;color:var(--plum);">After 24 hours</div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="generate-btn" onclick="openCustomizer()" id="modal-cta">Customise &amp; Create Gift →</button>
+        <div class="modal-share-row">
+          <button class="share-btn" onclick="closeModal()">← Back to gifts</button>
+          <button class="share-btn wa">📱 Gift via WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── PRODUCT DATA ────────────────────────
+    const PRODUCTS = [
+      {
+        id: 1,
+        category: 'love',
+        badge: 'hot',
+        badgeLabel: '🔥 Popular',
+        emoji: '💌',
+        bg: 'linear-gradient(135deg, #FFF0F3, #FFD6E0)',
+        title: 'Animated Love Letter',
+        desc: 'A hand-written style letter that reveals word by word, with a soft rose theme and your personal message.',
+        price: '$4.99',
+        stars: 5,
+        reviews: 412,
+        features: ['Typewriter animation','Custom names & message','Rose or navy theme','Mobile-first design','Shareable in seconds'],
+      },
+      {
+        id: 2,
+        category: 'birthday',
+        badge: 'new',
+        badgeLabel: '✨ New',
+        emoji: '🎂',
+        bg: 'linear-gradient(135deg, #FFF9E6, #FFE0A0)',
+        title: 'Birthday Surprise Page',
+        desc: 'Confetti, their favourite photo, and your birthday message — waiting for them the moment they open the link.',
+        price: '$3.99',
+        stars: 5,
+        reviews: 289,
+        features: ['Confetti animation','Photo upload support','Birthday countdown','Custom colour theme','WhatsApp-ready link'],
+      },
+      {
+        id: 3,
+        category: 'anniversary',
+        badge: null,
+        emoji: '💑',
+        bg: 'linear-gradient(135deg, #F0F4FF, #D6E0FF)',
+        title: 'Relationship Timeline',
+        desc: 'A scrollable journey through your relationship — add dates, milestones, and photos for each chapter.',
+        price: '$6.99',
+        stars: 5,
+        reviews: 178,
+        features: ['Unlimited milestones','Photo per milestone','Animated scroll reveal','Couples theme','Printable PDF option'],
+      },
+      {
+        id: 4,
+        category: 'surprise',
+        badge: null,
+        emoji: '📬',
+        bg: 'linear-gradient(135deg, #F3E8FF, #DDB6FF)',
+        title: 'Open When Letters',
+        desc: 'A collection of sealed letters they open for specific moments — "open when you miss me", "open when you need a laugh".',
+        price: '$5.49',
+        stars: 4,
+        reviews: 95,
+        features: ['Up to 8 sealed letters','Custom trigger phrases','Reveal animation','Long-distance favourite','Mobile optimised'],
+      },
+      {
+        id: 5,
+        category: 'love',
+        badge: null,
+        emoji: '🌹',
+        bg: 'linear-gradient(135deg, #FFE8E8, #FFB3B3)',
+        title: 'Reasons I Love You',
+        desc: '30 animated cards that flip one by one, each revealing a personal reason you love them. Simple and deeply touching.',
+        price: '$4.49',
+        stars: 5,
+        reviews: 203,
+        features: ['Up to 30 reasons','Card flip animation','Custom names','4 colour themes','No sign-up needed'],
+      },
+      {
+        id: 6,
+        category: 'free',
+        badge: 'free',
+        badgeLabel: 'Free',
+        emoji: '🌸',
+        bg: 'linear-gradient(135deg, #E8F5E9, #C8E6C9)',
+        title: 'Simple Love Note',
+        desc: 'A clean, beautiful note with your message and names. Free forever — the perfect way to try LoversGift.',
+        price: 'Free',
+        stars: 4,
+        reviews: 1204,
+        features: ['Instant generation','No payment needed','Custom message','Expires in 24h','Try before you buy'],
+      },
+      {
+        id: 7,
+        category: 'birthday',
+        badge: null,
+        emoji: '🎁',
+        bg: 'linear-gradient(135deg, #FFF0E6, #FFD0A0)',
+        title: 'Secret Gift Reveal',
+        desc: 'A mystery box that slowly unwraps on screen — reveal a surprise gift, trip, or experience in style.',
+        price: '$3.49',
+        stars: 4,
+        reviews: 67,
+        features: ['Unwrap animation','Custom reveal message','Photo support','Shareable link','Any occasion'],
+      },
+      {
+        id: 8,
+        category: 'anniversary',
+        badge: 'new',
+        badgeLabel: '✨ New',
+        emoji: '🎵',
+        bg: 'linear-gradient(135deg, #E8E8FF, #C4C4FF)',
+        title: 'Our Song Page',
+        desc: 'A dedicated page for your song — with lyrics (optional), the story of how it became yours, and a Spotify play button.',
+        price: '$5.99',
+        stars: 5,
+        reviews: 44,
+        features: ['Spotify embed','Animated lyrics (optional)','Your story section','Album art display','Couples photo option'],
+      },
+    ];
+
+    let currentFilter = 'all';
+
+    function filterProducts(cat, btn) {
+      currentFilter = cat;
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      renderProducts();
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('product-grid');
+      const filtered = currentFilter === 'all'
+        ? PRODUCTS
+        : PRODUCTS.filter(p => p.category === currentFilter);
+
+      grid.innerHTML = filtered.map((p, i) => `
+        <a class="product-card reveal reveal-delay-${(i % 4) + 1}" onclick="openModal(${p.id}); return false;" href="#" style="animation-delay:${i * 0.07}s">
+          ${p.badge ? `<div class="product-card-badge badge-${p.badge}">${p.badgeLabel}</div>` : ''}
+          <div class="product-card-img" style="background:${p.bg};">${p.emoji}</div>
+          <div class="product-card-body">
+            <div class="product-card-category">${p.category.charAt(0).toUpperCase() + p.category.slice(1)}</div>
+            <div class="product-card-title">${p.title}</div>
+            <div class="product-card-stars">
+              <span class="stars">${'★'.repeat(p.stars)}${'☆'.repeat(5-p.stars)}</span>
+              <span class="review-count">(${p.reviews.toLocaleString()})</span>
+            </div>
+            <div class="product-card-desc">${p.desc}</div>
+            <div class="product-card-footer">
+              <div class="product-price">${p.price === 'Free' ? '<span class="free">Free</span>' : p.price}</div>
+              <button class="product-card-btn">Create Gift</button>
+            </div>
+          </div>
+        </a>
+      `).join('');
+
+      // re-observe new cards
+      observeReveal();
+    }
+
+    // ─── MODAL ──────────────────────────────
+    function openModal(id) {
+      const p = PRODUCTS.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('modal-badge').textContent = `${p.emoji} ${p.category.charAt(0).toUpperCase() + p.category.slice(1)}`;
+      document.getElementById('modal-title').textContent = p.title;
+      document.getElementById('modal-desc').textContent = p.desc;
+      document.getElementById('modal-price').textContent = p.price;
+      document.getElementById('modal-features').innerHTML = p.features.map(f =>
+        `<span class="modal-feature-pill">✓ ${f}</span>`
+      ).join('');
+      if (p.price === 'Free') {
+        document.getElementById('modal-cta').textContent = 'Create Free Gift →';
+      } else {
+        document.getElementById('modal-cta').textContent = `Customise & Create Gift → ${p.price}`;
+      }
+      document.getElementById('product-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('product-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function closeModalOutside(e) {
+      if (e.target === document.getElementById('product-modal')) closeModal();
+    }
+
+    function openCustomizer() {
+      closeModal();
+      document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ─── LIVE PREVIEW ───────────────────────
+    function updatePreview() {
+      const name = document.getElementById('receiver-name').value || 'Sofia';
+      const msg  = document.getElementById('message-input').value || 'Every moment with you feels like a dream I never want to wake up from. You make everything brighter, warmer, and more beautiful.';
+      document.getElementById('prev-name').textContent = name;
+      document.getElementById('prev-message').textContent = msg.slice(0, 180) + (msg.length > 180 ? '...' : '');
+    }
+
+    function selectTheme(el, hearts) {
+      document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('prev-hearts').textContent = hearts;
+      const bg = el.style.background;
+      document.querySelector('.phone-content').style.background = bg;
+    }
+
+    // ─── COUNTDOWN ──────────────────────────
+    function startCountdown() {
+      const total = 24 * 60 * 60 - 18;
+      let remaining = total;
+      const el = document.getElementById('countdown-time');
+      if (!el) return;
+      setInterval(() => {
+        remaining = Math.max(0, remaining - 1);
+        const h = Math.floor(remaining / 3600);
+        const m = Math.floor((remaining % 3600) / 60);
+        const s = remaining % 60;
+        el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      }, 1000);
+    }
+
+    // ─── GENERATE LINK ──────────────────────
+    function generateLink() {
+      const receiver = document.getElementById('receiver-name').value || 'your love';
+      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      const code = Array.from({length: 8}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+      document.getElementById('gift-link').textContent = `https://loversgift.io/g/${code} 💕`;
+      document.getElementById('link-receiver').textContent = receiver;
+      document.getElementById('form-step-1').style.display = 'none';
+      const lg = document.getElementById('link-generated');
+      lg.classList.add('show');
+      lg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function copyLink() {
+      const link = document.getElementById('gift-link').textContent.replace(' 💕', '');
+      navigator.clipboard.writeText(link).catch(() => {});
+      const el = document.getElementById('gift-link');
+      const orig = el.textContent;
+      el.textContent = '✓ Copied to clipboard!';
+      el.style.color = '#4CAF50';
+      setTimeout(() => { el.textContent = orig; el.style.color = ''; }, 2000);
+    }
+
+    // ─── FLOATING HEARTS ────────────────────
+    function spawnHeart() {
+      const bg = document.getElementById('hearts-bg');
+      if (!bg) return;
+      const hearts = ['♡','♥','💕','💗','💓'];
+      const h = document.createElement('div');
+      h.className = 'heart-float';
+      h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+      const size = 10 + Math.random() * 18;
+      const left = Math.random() * 100;
+      const dur  = 12 + Math.random() * 14;
+      const rot  = -20 + Math.random() * 40;
+      const op   = 0.06 + Math.random() * 0.1;
+      h.style.cssText = `
+        left: ${left}%;
+        bottom: -40px;
+        font-size: ${size}px;
+        --rot: ${rot}deg;
+        --max-op: ${op};
+        animation-duration: ${dur}s;
+        animation-delay: ${Math.random() * -dur}s;
+        color: #E8476A;
+      `;
+      bg.appendChild(h);
+      setTimeout(() => h.remove(), dur * 1000 + 500);
+    }
+    setInterval(spawnHeart, 1800);
+    for (let i = 0; i < 6; i++) setTimeout(spawnHeart, i * 300);
+
+    // ─── SCROLL REVEAL ──────────────────────
+    function observeReveal() {
+      const els = document.querySelectorAll('.reveal:not(.visible)');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      els.forEach(el => io.observe(el));
+    }
+
+    // ─── NAV SCROLL ─────────────────────────
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('main-nav');
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // ─── MOBILE NAV ─────────────────────────
+    function toggleMobileNav() {
+      document.getElementById('mobile-nav').classList.toggle('open');
+    }
+    function closeMobileNav() {
+      document.getElementById('mobile-nav').classList.remove('open');
+    }
+
+    // ─── INIT ───────────────────────────────
+    renderProducts();
+    startCountdown();
+    observeReveal();
+  </script>
+</body>
+</html>
