@@ -829,6 +829,30 @@
     }
     .form-group textarea { resize: vertical; min-height: 80px; }
 
+    .message-template-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .message-template-chip {
+      border: 1px solid rgba(229,94,149,0.18);
+      background: rgba(255,255,255,0.04);
+      color: var(--mauve);
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .message-template-chip:hover,
+    .message-template-chip.active {
+      border-color: var(--rose);
+      background: rgba(232,71,106,0.14);
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1755,6 +1779,18 @@
             <div class="form-group">
               <label>Your message</label>
               <textarea id="message-input" placeholder="Write something from the heart..." oninput="updatePreview()" maxlength="300">Every moment with you feels like a dream I never want to wake up from. You make everything brighter, warmer, and more beautiful.</textarea>
+              <div class="message-template-row" id="message-templates-demo">
+                <button type="button" class="message-template-chip active" data-target="message-input" data-index="-1" onclick="clearMessageTemplate('message-input')">✍️ Write your own</button>
+                <button type="button" class="message-template-chip" data-target="message-input" data-index="0" onclick="selectMessageTemplate(0, 'message-input')">💌 Sweet & simple</button>
+                <button type="button" class="message-template-chip" data-target="message-input" data-index="1" onclick="selectMessageTemplate(1, 'message-input')">🌷 Little moments</button>
+                <button type="button" class="message-template-chip" data-target="message-input" data-index="2" onclick="selectMessageTemplate(2, 'message-input')">💕 Forever chosen</button>
+                <button type="button" class="message-template-chip" data-target="message-input" data-index="3" onclick="selectMessageTemplate(3, 'message-input')">🏡 My favorite place</button>
+                <button type="button" class="message-template-chip" data-target="message-input" data-index="4" onclick="selectMessageTemplate(4, 'message-input')">✨ Deeply loved</button>
+                <button type="button" class="message-template-chip" data-target="message-input" data-index="5" onclick="selectMessageTemplate(5, 'message-input')">🌙 Magical love</button>
+                <button type="button" class="message-template-chip" data-target="message-input" data-index="6" onclick="selectMessageTemplate(6, 'message-input')">💞 Safe & happy</button>
+                <button type="button" class="message-template-chip" data-target="message-input" data-index="7" onclick="selectMessageTemplate(7, 'message-input')">🌈 Soft & warm</button>
+                <button type="button" class="message-template-chip" data-target="message-input" data-index="8" onclick="selectMessageTemplate(8, 'message-input')">💗 You matter</button>
+              </div>
             </div>
 
             <div class="form-group">
@@ -1784,7 +1820,7 @@
               <div style="font-size:2.5rem;margin-bottom:12px;">🎉</div>
               <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:600;color:var(--plum);margin-bottom:6px;">Your gift is ready!</div>
               <div style="font-size:0.85rem;color:var(--mauve);margin-bottom:4px;">Share this private link with <strong id="link-receiver">Sofia</strong>:</div>
-              <div class="link-box" id="gift-link" onclick="copyLink()">https://loversgift.io/g/xK9m2p...💕</div>
+              <div class="link-box" id="gift-link" onclick="copyLink()">https://loversgift.netlify.app/g/xK9m2p...💕</div>
               <div class="link-expire">
                 <svg width="12" height="12" fill="none" stroke="var(--mauve)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                 Expires in 24 hours · Tap link to copy
@@ -1967,6 +2003,18 @@
         <div class="form-group">
           <label>Your message <span style="color:var(--mauve);font-weight:300;">(max 500 chars)</span></label>
           <textarea id="m-message" placeholder="Write something from the heart..." maxlength="500" rows="4"></textarea>
+          <div class="message-template-row" id="message-templates-modal">
+            <button type="button" class="message-template-chip active" data-target="m-message" data-index="-1" onclick="clearMessageTemplate('m-message')">✍️ Write your own</button>
+            <button type="button" class="message-template-chip" data-target="m-message" data-index="0" onclick="selectMessageTemplate(0, 'm-message')">💌 Sweet & simple</button>
+            <button type="button" class="message-template-chip" data-target="m-message" data-index="1" onclick="selectMessageTemplate(1, 'm-message')">🌷 Little moments</button>
+            <button type="button" class="message-template-chip" data-target="m-message" data-index="2" onclick="selectMessageTemplate(2, 'm-message')">💕 Forever chosen</button>
+            <button type="button" class="message-template-chip" data-target="m-message" data-index="3" onclick="selectMessageTemplate(3, 'm-message')">🏡 My favorite place</button>
+            <button type="button" class="message-template-chip" data-target="m-message" data-index="4" onclick="selectMessageTemplate(4, 'm-message')">✨ Deeply loved</button>
+            <button type="button" class="message-template-chip" data-target="m-message" data-index="5" onclick="selectMessageTemplate(5, 'm-message')">🌙 Magical love</button>
+            <button type="button" class="message-template-chip" data-target="m-message" data-index="6" onclick="selectMessageTemplate(6, 'm-message')">💞 Safe & happy</button>
+            <button type="button" class="message-template-chip" data-target="m-message" data-index="7" onclick="selectMessageTemplate(7, 'm-message')">🌈 Soft & warm</button>
+            <button type="button" class="message-template-chip" data-target="m-message" data-index="8" onclick="selectMessageTemplate(8, 'm-message')">💗 You matter</button>
+          </div>
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -2411,6 +2459,39 @@
       `).join('');
 
       observeReveal();
+    }
+
+    const MESSAGE_TEMPLATES = [
+      'Every moment with you feels like a dream I never want to wake up from. You make everything brighter, warmer, and more beautiful.',
+      'I still fall for you in the little moments — your laugh, your smile, the way you make ordinary days feel magical.',
+      'No matter how many days pass, my heart still chooses you in every way that matters.',
+      'You are my favorite place, my favorite person, and the sweetest part of every day.',
+      'I hope today reminds you how deeply you are loved and how lucky I am to have you.',
+      'Some people come into your life and change it forever. You are that beautiful kind of magic.',
+      'I do not need a perfect life when I have you — you make everything feel like home.',
+      'You make my heart feel safe, light, and full of joy all at once.',
+      'Thank you for being the reason my days feel softer, warmer, and more beautiful.',
+      'I love you more than words can say, and I hope you feel that love in every little thing I do.'
+    ];
+
+    function selectMessageTemplate(index, targetId) {
+      const field = document.getElementById(targetId);
+      if (!field) return;
+      field.value = MESSAGE_TEMPLATES[index] || '';
+      document.querySelectorAll(`.message-template-chip[data-target="${targetId}"]`).forEach(chip => {
+        chip.classList.toggle('active', Number(chip.dataset.index) === index);
+      });
+      if (targetId === 'message-input') updatePreview();
+    }
+
+    function clearMessageTemplate(targetId) {
+      const field = document.getElementById(targetId);
+      if (!field) return;
+      field.value = '';
+      document.querySelectorAll(`.message-template-chip[data-target="${targetId}"]`).forEach(chip => {
+        chip.classList.toggle('active', Number(chip.dataset.index) === -1);
+      });
+      if (targetId === 'message-input') updatePreview();
     }
 
     // ─── LIVE PREVIEW (demo section) ──────────────────────────────
