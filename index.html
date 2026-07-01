@@ -1674,7 +1674,7 @@
           </div>
         </div>
         <a href="#products" class="view-all-link">
-          View all 24 gifts
+          View all 11 gifts
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
       </div>
@@ -2061,14 +2061,14 @@
           </div>
         </div>
 
-        <!-- PayPal button container -->
+        <!-- Checkout button container -->
         <div id="paypal-button-container" style="min-height:50px;"></div>
 
         <!-- Trust signals -->
         <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-top:16px;flex-wrap:wrap;">
           <span style="font-size:0.72rem;color:var(--mauve);display:flex;align-items:center;gap:5px;">🔒 Secure checkout</span>
           <span style="font-size:0.72rem;color:var(--mauve);display:flex;align-items:center;gap:5px;">⚡ Instant delivery</span>
-          <span style="font-size:0.72rem;color:var(--mauve);display:flex;align-items:center;gap:5px;">🛡️ PayPal protected</span>
+          <span style="font-size:0.72rem;color:var(--mauve);display:flex;align-items:center;gap:5px;">🛡️ Whop protected</span>
         </div>
 
         <button class="share-btn" onclick="goToStep('form')" style="width:100%;justify-content:center;margin-top:14px;">← Edit details</button>
@@ -2112,7 +2112,7 @@
       <div id="modal-step-processing" style="display:none;text-align:center;padding:40px 0;">
         <div style="font-size:2.5rem;margin-bottom:16px;">💳</div>
         <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:600;color:var(--plum);margin-bottom:8px;">Processing payment...</div>
-        <div style="font-size:0.85rem;color:var(--mauve);">Please wait while we confirm with PayPal and activate your gift.</div>
+        <div style="font-size:0.85rem;color:var(--mauve);">Please wait while we confirm your payment and activate your gift.</div>
         <div style="margin-top:24px;display:flex;justify-content:center;">
           <div class="spinner"></div>
         </div>
@@ -2121,129 +2121,157 @@
     </div>
   </div>
 
-  <!-- PayPal JS SDK — loaded with your client ID -->
-  <script id="paypal-sdk" src="about:blank"></script>
-
   <script>
     // ─── CONFIG — change this to your Railway backend URL ─────────
     const API_BASE      = 'https://loversgift-backend-production.up.railway.app';
-    const PAYPAL_CLIENT = 'AQ5TGSpaJ3WanObWhqmJeuvBVsYUC3HKXWtWz9XGdL1kVtEhV60QC1NKwW3TJ35TPDdvFyLsYX_58fMu';
 
     // ─── STATE ────────────────────────────────────────────────────
     let currentProduct  = null;   // product object selected
     let currentOrderRef = null;   // our internal order ref
-    let currentPaypalId = null;   // paypal order id
-    let paypalLoaded    = false;
+    let paymentPollTimer = null;
     let giftResult      = null;   // { shareUrl, whatsappUrl, messengerUrl, expiresAt }
+    let paymentConfig   = null;
 
     // ─── PRODUCT DATA (mirrors database seed) ─────────────────────
     const PRODUCTS = [
-      { id:1, category:'love',        badge:'hot',  badgeLabel:'🔥 Popular', emoji:'💌', bg:'linear-gradient(135deg,#1C0C14,#3D1A28)', title:'Animated Love Letter',  desc:'A hand-written style letter that reveals word by word, with a soft rose theme and your personal message.', price:'$4.99', priceCents:499,  stars:5, reviews:412,  features:['Typewriter animation','Custom names & message','Rose or navy theme','Mobile-first design','Shareable in seconds'] },
-      { id:2, category:'birthday',    badge:'new',  badgeLabel:'✨ New',     emoji:'🎂', bg:'linear-gradient(135deg,#1A0F00,#3D2800)', title:'Birthday Surprise Page', desc:'Confetti, their favourite photo, and your birthday message — waiting for them the moment they open the link.', price:'$3.99', priceCents:399,  stars:5, reviews:289,  features:['Confetti animation','Photo upload support','Birthday countdown','Custom colour theme','WhatsApp-ready link'] },
-      { id:3, category:'anniversary', badge:null,   badgeLabel:null,         emoji:'💑', bg:'linear-gradient(135deg,#0A0F1A,#1A2840)', title:'Relationship Timeline',  desc:'A scrollable journey through your relationship — add dates, milestones, and photos for each chapter.', price:'$6.99', priceCents:699,  stars:5, reviews:178,  features:['Unlimited milestones','Photo per milestone','Animated scroll reveal','Couples theme','Printable PDF option'] },
-      { id:4, category:'surprise',    badge:null,   badgeLabel:null,         emoji:'📬', bg:'linear-gradient(135deg,#120A1A,#2A1040)', title:'Open When Letters',      desc:'A collection of sealed letters they open for specific moments — "open when you miss me", "open when you need a laugh".', price:'$5.49', priceCents:549, stars:4, reviews:95,   features:['Up to 8 sealed letters','Custom trigger phrases','Reveal animation','Long-distance favourite','Mobile optimised'] },
-      { id:5, category:'love',        badge:null,   badgeLabel:null,         emoji:'🌹', bg:'linear-gradient(135deg,#1A0808,#3D1010)', title:'Reasons I Love You',     desc:'30 animated cards that flip one by one, each revealing a personal reason you love them.', price:'$4.49', priceCents:449,  stars:5, reviews:203,  features:['Up to 30 reasons','Card flip animation','Custom names','4 colour themes','No sign-up needed'] },
+      { id:1, category:'love',        badge:'hot',  badgeLabel:'🔥 Popular', emoji:'💌', bg:'linear-gradient(135deg,#1C0C14,#3D1A28)', title:'Animated Love Letter',  desc:'A hand-written style letter that reveals word by word, with a soft rose theme and your personal message.', price:'$3.00', priceCents:300,  stars:5, reviews:412,  features:['Typewriter animation','Custom names & message','Rose or navy theme','Mobile-first design','Shareable in seconds'] },
+      { id:2, category:'birthday',    badge:'new',  badgeLabel:'✨ New',     emoji:'🎂', bg:'linear-gradient(135deg,#1A0F00,#3D2800)', title:'Birthday Surprise Page', desc:'Confetti, their favourite photo, and your birthday message — waiting for them the moment they open the link.', price:'$3.00', priceCents:300,  stars:5, reviews:289,  features:['Confetti animation','Photo upload support','Birthday countdown','Custom colour theme','WhatsApp-ready link'] },
+      { id:3, category:'anniversary', badge:null,   badgeLabel:null,         emoji:'💑', bg:'linear-gradient(135deg,#0A0F1A,#1A2840)', title:'Relationship Timeline',  desc:'A scrollable journey through your relationship — add dates, milestones, and photos for each chapter.', price:'$3.00', priceCents:300,  stars:5, reviews:178,  features:['Unlimited milestones','Photo per milestone','Animated scroll reveal','Couples theme','Printable PDF option'] },
+      { id:4, category:'surprise',    badge:null,   badgeLabel:null,         emoji:'📬', bg:'linear-gradient(135deg,#120A1A,#2A1040)', title:'Open When Letters',      desc:'A collection of sealed letters they open for specific moments — "open when you miss me", "open when you need a laugh".', price:'$3.00', priceCents:300, stars:4, reviews:95,   features:['Up to 8 sealed letters','Custom trigger phrases','Reveal animation','Long-distance favourite','Mobile optimised'] },
+      { id:5, category:'love',        badge:null,   badgeLabel:null,         emoji:'🌹', bg:'linear-gradient(135deg,#1A0808,#3D1010)', title:'Reasons I Love You',     desc:'30 animated cards that flip one by one, each revealing a personal reason you love them.', price:'$3.00', priceCents:300,  stars:5, reviews:203,  features:['Up to 30 reasons','Card flip animation','Custom names','4 colour themes','No sign-up needed'] },
       { id:6, category:'free',        badge:'free', badgeLabel:'Free',       emoji:'🌸', bg:'linear-gradient(135deg,#0A1A0F,#102814)', title:'Simple Love Note',       desc:'A clean, beautiful note with your message and names. Free forever — the perfect way to try LoversGift.', price:'Free', priceCents:0, stars:4, reviews:1204, features:['Instant generation','No payment needed','Custom message','Expires in 24h','Try before you buy'] },
-      { id:7, category:'birthday',    badge:null,   badgeLabel:null,         emoji:'🎁', bg:'linear-gradient(135deg,#1A0F00,#3D2200)', title:'Secret Gift Reveal',     desc:'A mystery box that slowly unwraps on screen — reveal a surprise gift, trip, or experience in style.', price:'$3.49', priceCents:349, stars:4, reviews:67,   features:['Unwrap animation','Custom reveal message','Photo support','Shareable link','Any occasion'] },
-      { id:8, category:'anniversary', badge:'new',  badgeLabel:'✨ New',     emoji:'🎵', bg:'linear-gradient(135deg,#0A0A1A,#181040)', title:'Our Song Page',          desc:'A dedicated page for your song — with lyrics, the story of how it became yours, and a Spotify play button.', price:'$5.99', priceCents:599, stars:5, reviews:44,  features:['Spotify embed','Animated lyrics (optional)','Your story section','Album art display','Couples photo option'] },
+      { id:7, category:'birthday',    badge:null,   badgeLabel:null,         emoji:'🎁', bg:'linear-gradient(135deg,#1A0F00,#3D2200)', title:'Secret Gift Reveal',     desc:'A mystery box that slowly unwraps on screen — reveal a surprise gift, trip, or experience in style.', price:'$3.00', priceCents:300, stars:4, reviews:67,   features:['Unwrap animation','Custom reveal message','Photo support','Shareable link','Any occasion'] },
+      { id:8, category:'anniversary', badge:'new',  badgeLabel:'✨ New',     emoji:'🎵', bg:'linear-gradient(135deg,#0A0A1A,#181040)', title:'Our Song Page',          desc:'A dedicated page for your song — with lyrics, the story of how it became yours, and a Spotify play button.', price:'$3.00', priceCents:300, stars:5, reviews:44,  features:['Spotify embed','Animated lyrics (optional)','Your story section','Album art display','Couples photo option'] },
+      { id:9, category:'love',        badge:'new',  badgeLabel:'✨ New',     emoji:'🕯️', bg:'linear-gradient(135deg,#07030F,#1A0C0F)', title:'Secret Confession',     desc:'Confess your deepest feelings in a candlelit moment — intimate, emotional, and unforgettable.', price:'$3.00', priceCents:300, stars:5, reviews:128, features:['Candlelit ambiance','Rain animation','Emotional reveal','Custom message','Mobile optimised'] },
+      { id:10, category:'anniversary', badge:'new', badgeLabel:'✨ New',     emoji:'🌍', bg:'linear-gradient(135deg,#0A0510,#1A0820)', title:'Our World Page',         desc:'Create a personalized world with your photos, memories, and locations that matter to both of you.', price:'$3.00', priceCents:300, stars:5, reviews:89,  features:['Custom world map','Photo gallery','Location markers','Interactive exploration','Shareable album'] },
+      { id:11, category:'surprise',   badge:null,   badgeLabel:null,         emoji:'🌌', bg:'linear-gradient(135deg,#0A0515,#1A0A2A)', title:'Universe of Moments',    desc:'Journey through your relationship like stars in a universe — each moment shining bright and unique.', price:'$3.00', priceCents:300, stars:5, reviews:76,  features:['Star animations','Memory timeline','Photo display','Cosmic theme','Full customization'] },
     ];
 
-    // ─── PAYPAL SDK LOADER ─────────────────────────────────────────
-    // We load the PayPal SDK once, lazily, when the checkout modal opens
-    function loadPayPalSDK() {
-      return new Promise((resolve, reject) => {
-        if (paypalLoaded) return resolve();
-        const existing = document.getElementById('paypal-sdk');
-        if (existing) existing.remove();
+    function clearPaymentPoll() {
+      if (paymentPollTimer) clearTimeout(paymentPollTimer);
+      paymentPollTimer = null;
+    }
 
-        const script = document.createElement('script');
-        script.id  = 'paypal-sdk-live';
-        script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT}&currency=USD&intent=capture`;
-        script.onload  = () => { paypalLoaded = true; resolve(); };
-        script.onerror = () => reject(new Error('Failed to load PayPal SDK'));
-        document.body.appendChild(script);
+    async function loadPaymentConfig() {
+      try {
+        const resp = await fetch(`${API_BASE}/api/payment/config`);
+        paymentConfig = await resp.json();
+      } catch (err) {
+        console.warn('Payment config unavailable:', err);
+        paymentConfig = { whopEnabled:true, paypalEnabled:true, preferredMethod:'whop' };
+      }
+    }
+
+    async function renderPaymentButtons() {
+      await loadPaymentConfig();
+      const container = document.getElementById('paypal-button-container');
+      container.innerHTML = '';
+
+      const buttons = [];
+      if (paymentConfig?.whopEnabled) {
+        buttons.push({ label: `💳 Pay ${currentProduct?.price || '$3.00'} with Whop`, handler: startWhopCheckout, primary: (paymentConfig?.preferredMethod || 'whop') === 'whop' });
+      }
+      if (paymentConfig?.paypalEnabled) {
+        buttons.push({ label: `💳 Pay ${currentProduct?.price || '$3.00'} with PayPal`, handler: startPayPalCheckout, primary: (paymentConfig?.preferredMethod || 'whop') === 'paypal' });
+      }
+
+      if (buttons.length === 0) {
+        container.innerHTML = '<p style="color:var(--rose);text-align:center;font-size:0.85rem;">⚠️ Payment methods are currently unavailable.</p>';
+        return;
+      }
+
+      buttons.forEach((btn, index) => {
+        const button = document.createElement('button');
+        button.className = 'generate-btn';
+        button.style.marginTop = index === 0 ? '0' : '10px';
+        button.style.opacity = btn.primary ? '1' : '0.92';
+        button.textContent = btn.label;
+        button.onclick = btn.handler;
+        container.appendChild(button);
       });
     }
 
-    // ─── PAYPAL BUTTONS RENDERER ───────────────────────────────────
-    async function renderPayPalButtons(product) {
+    async function startWhopCheckout() {
+      const body = buildOrderBody();
+      if (!body) return;
+
+      clearPaymentPoll();
+      goToStep('processing');
+
       try {
-        await loadPayPalSDK();
-        const container = document.getElementById('paypal-button-container');
-        container.innerHTML = '';
+        const resp = await fetch(`${API_BASE}/api/payment/create-order`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...body, paymentMethod: 'whop' }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'Order creation failed');
 
-        paypal.Buttons({
-          style: {
-            layout:  'vertical',
-            color:   'gold',
-            shape:   'pill',
-            label:   'pay',
-            height:  48,
-          },
+        currentOrderRef = data.orderRef;
+        if (data.checkoutUrl) {
+          const popup = window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer,width=900,height=700');
+          if (!popup) window.location.href = data.checkoutUrl;
+        } else {
+          throw new Error('No checkout URL returned.');
+        }
 
-          // Called when PayPal popup opens — create order on our backend
-          createOrder: async () => {
-            const body = buildOrderBody();
-            if (!body) return;  // validation failed, already showed error
-
-            try {
-              const resp = await fetch(`${API_BASE}/api/payment/create-order`, {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify(body),
-              });
-              const data = await resp.json();
-              if (!resp.ok) throw new Error(data.error || 'Order creation failed');
-
-              currentOrderRef = data.orderRef;
-              currentPaypalId = data.paypalOrderId;
-              return data.paypalOrderId;
-            } catch (err) {
-              showPaymentError(err.message);
-              throw err;
-            }
-          },
-
-          // Called when user approves payment in PayPal popup
-          onApprove: async (data) => {
-            goToStep('processing');
-            try {
-              const resp = await fetch(`${API_BASE}/api/payment/capture`, {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify({
-                  paypalOrderId: data.orderID,
-                  orderRef:      currentOrderRef,
-                }),
-              });
-              const result = await resp.json();
-              if (!resp.ok) throw new Error(result.error || 'Capture failed');
-
-              // ✅ Payment confirmed — show the gift link!
-              giftResult = result;
-              showSuccess(result);
-            } catch (err) {
-              goToStep('pay');
-              showPaymentError(err.message);
-            }
-          },
-
-          onError: (err) => {
-            console.error('PayPal error:', err);
-            showPaymentError('Something went wrong with PayPal. Please try again.');
-          },
-
-          onCancel: () => {
-            // User closed PayPal popup — stay on pay step
-            goToStep('pay');
-          },
-
-        }).render('#paypal-button-container');
-
+        pollForPayment();
       } catch (err) {
-        document.getElementById('paypal-button-container').innerHTML =
-          `<p style="color:var(--rose);text-align:center;font-size:0.85rem;">⚠️ Could not load PayPal. Please refresh and try again.</p>`;
+        goToStep('pay');
+        showPaymentError(err.message);
       }
+    }
+
+    async function startPayPalCheckout() {
+      const body = buildOrderBody();
+      if (!body) return;
+
+      clearPaymentPoll();
+      goToStep('processing');
+
+      try {
+        const resp = await fetch(`${API_BASE}/api/payment/create-order`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...body, paymentMethod: 'paypal' }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'Order creation failed');
+
+        currentOrderRef = data.orderRef;
+        const approvalUrl = data.approvalUrl || data.links?.find(link => link.rel === 'approve')?.href;
+        if (approvalUrl) {
+          const popup = window.open(approvalUrl, '_blank', 'noopener,noreferrer,width=900,height=700');
+          if (!popup) window.location.href = approvalUrl;
+        } else if (data.paypalOrderId) {
+          const popup = window.open(`${API_BASE}/api/payment/paypal/return?orderRef=${data.orderRef}`, '_blank', 'noopener,noreferrer,width=900,height=700');
+          if (!popup) window.location.href = `${API_BASE}/api/payment/paypal/return?orderRef=${data.orderRef}`;
+        } else {
+          throw new Error('No PayPal approval link returned.');
+        }
+
+        pollForPayment();
+      } catch (err) {
+        goToStep('pay');
+        showPaymentError(err.message);
+      }
+    }
+
+    async function pollForPayment() {
+      if (!currentOrderRef) return;
+      try {
+        const resp = await fetch(`${API_BASE}/api/payment/status/${currentOrderRef}`);
+        const result = await resp.json();
+        if (result.status === 'paid' && result.shareUrl) {
+          clearPaymentPoll();
+          giftResult = result;
+          showSuccess(result);
+          return;
+        }
+      } catch (err) {
+        console.warn('Payment poll failed:', err);
+      }
+      paymentPollTimer = setTimeout(pollForPayment, 3000);
     }
 
     // ─── BUILD ORDER BODY FROM FORM ────────────────────────────────
@@ -2361,13 +2389,12 @@
         document.getElementById('pay-emoji').textContent        = currentProduct.emoji;
 
         if (currentProduct.priceCents === 0) {
-          // Free — skip PayPal, show instant button
           document.getElementById('paypal-button-container').innerHTML = `
             <button class="generate-btn" onclick="createFreeGift()" style="margin-top:0;">
               🌸 Create My Free Gift — Instantly
             </button>`;
         } else {
-          renderPayPalButtons(currentProduct);
+          renderPaymentButtons();
         }
       }
 
@@ -2382,7 +2409,7 @@
       if (!p) return;
       currentProduct  = p;
       currentOrderRef = null;
-      currentPaypalId = null;
+      clearPaymentPoll();
       giftResult      = null;
 
       // Populate step 1 info
